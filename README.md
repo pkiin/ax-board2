@@ -1,16 +1,60 @@
-# React + Vite
+# AX 아이디어 보드
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+업무에 AI를 어떻게 적용할지 아이디어를 카드로 모아 두는 웹앱입니다. 별도 서버나 로그인 없이, 입력한 내용을 브라우저의 `localStorage`에 저장합니다.
 
-Currently, two official plugins are available:
+## 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **아이디어 추가** — 제목 / 대상 업무 / AI 활용 아이디어를 입력해 카드로 등록합니다. 세 항목이 모두 채워져야 등록되고, 비어 있으면 폼 아래에 안내 문구가 표시됩니다. 새 카드는 목록 맨 위에 쌓입니다.
+- **목록 조회와 삭제** — 등록된 카드 수와 함께 목록을 보여 주고, 카드마다 `삭제` 버튼으로 개별 삭제합니다.
+- **새로고침 후에도 유지** — 목록이 바뀔 때마다 `localStorage`에 저장하고 첫 렌더에서 다시 읽어옵니다.
 
-## React Compiler
+## 실행
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev -- --port 3012   # http://localhost:3012/
+```
 
-## Expanding the Oxlint configuration
+포트 번호는 자유롭게 바꿀 수 있습니다. `--port` 를 생략하면 Vite 기본값(5173)을 사용합니다.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+| 스크립트 | 설명 |
+| --- | --- |
+| `npm run dev` | 개발 서버 (HMR) |
+| `npm run build` | `dist/` 로 프로덕션 빌드 |
+| `npm run preview` | 빌드 결과물 미리보기 |
+| `npm run lint` | Oxlint 검사 |
+
+## 프로젝트 구조
+
+```
+src/
+├── main.jsx        진입점
+├── App.jsx         상태 보유, 목록 렌더링, localStorage 동기화
+├── IdeaForm.jsx    입력 폼과 유효성 검사
+├── IdeaCard.jsx    카드 표시와 삭제 버튼
+├── storage.js      localStorage 읽기/쓰기
+├── index.css       전역 스타일과 색상 토큰
+└── App.css         화면 스타일
+```
+
+## 데이터 저장 방식
+
+아이디어 배열 전체를 `ax-board:ideas` 키에 JSON으로 저장합니다. 카드 한 건의 형태는 다음과 같습니다.
+
+```json
+{
+  "id": "0f1c…",              // crypto.randomUUID()
+  "title": "주간 보고서 자동 초안 작성",
+  "target": "영업팀 주간 실적 보고",
+  "idea": "CRM 데이터를 요약해 초안을 생성하고 담당자가 검토만 수행",
+  "createdAt": "2026-09-17T12:34:56.789Z"
+}
+```
+
+저장된 JSON이 깨졌거나 시크릿 모드처럼 저장이 막힌 환경에서는 예외를 던지지 않고 빈 목록으로 동작합니다.
+
+브라우저·기기별로 따로 저장되므로 다른 사람과 목록이 공유되지는 않습니다. 브라우저 데이터를 지우면 등록한 아이디어도 함께 사라집니다.
+
+## 기술 스택
+
+React 19, Vite 8, 순수 CSS (외부 UI 라이브러리 없음).
