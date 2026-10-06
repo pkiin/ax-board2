@@ -22,7 +22,12 @@ export default function App() {
   return (
     <div className="page">
       <header className="page-header">
-        <h1>우리 팀 AX 보드-A</h1>
+        <div className="page-title-row">
+          <h1>우리 팀 AX 보드-A</h1>
+          <span className="idea-count" aria-live="polite">
+            {ideas.length === 0 ? '아직 아이디어가 없어요' : `아이디어 ${ideas.length}개`}
+          </span>
+        </div>
         <p className="page-desc">
           업무에 AI를 어떻게 적용할지 아이디어를 모아 보세요. 입력한 내용은 이 브라우저에 저장됩니다.
         </p>
@@ -33,7 +38,6 @@ export default function App() {
       <section className="board" aria-label="아이디어 목록">
         <div className="board-head">
           <h2>등록된 아이디어</h2>
-          <span className="count">{ideas.length}건</span>
         </div>
 
         {ideas.length === 0 ? (
