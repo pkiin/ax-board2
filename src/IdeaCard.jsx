@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 function formatDate(value) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
@@ -9,6 +11,19 @@ function formatDate(value) {
 }
 
 export default function IdeaCard({ idea, onDelete }) {
+  const [confirming, setConfirming] = useState(false)
+
+  useEffect(() => {
+    if (!confirming) return
+
+    function onKeyDown(event) {
+      if (event.key === 'Escape') setConfirming(false)
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [confirming])
+
   return (
     <li className="card">
       <div className="card-top">
@@ -16,7 +31,7 @@ export default function IdeaCard({ idea, onDelete }) {
         <button
           type="button"
           className="delete"
-          onClick={() => onDelete(idea.id)}
+          onClick={() => setConfirming(true)}
           aria-label={`${idea.title} 삭제`}
         >
           삭제
@@ -31,6 +46,38 @@ export default function IdeaCard({ idea, onDelete }) {
       </dl>
 
       {idea.createdAt && <p className="card-date">{formatDate(idea.createdAt)} 등록</p>}
+
+      {confirming && (
+        <div className="confirm-backdrop" onClick={() => setConfirming(false)}>
+          <div
+            className="confirm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`confirm-title-${idea.id}`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h4 id={`confirm-title-${idea.id}`} className="confirm-title">
+              아이디어를 삭제할까요?
+            </h4>
+            <p className="confirm-desc">
+              &lsquo;{idea.title}&rsquo; 아이디어가 삭제됩니다. 삭제한 내용은 되돌릴 수 없습니다.
+            </p>
+            <div className="confirm-actions">
+              <button type="button" className="confirm-cancel" onClick={() => setConfirming(false)}>
+                취소
+              </button>
+              <button
+                type="button"
+                className="confirm-delete"
+                autoFocus
+                onClick={() => onDelete(idea.id)}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </li>
   )
 }
