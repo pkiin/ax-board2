@@ -27,7 +27,10 @@ export default function IdeaCard({ idea, onDelete }) {
   return (
     <li className="card">
       <div className="card-top">
-        <h3 className="card-title">{idea.title}</h3>
+        <div className="card-heading">
+          <h3 className="card-title">{idea.title}</h3>
+          {idea.tag && <span className="card-tag">#{idea.tag}</span>}
+        </div>
         <button
           type="button"
           className="delete"
@@ -45,7 +48,7 @@ export default function IdeaCard({ idea, onDelete }) {
         <dd className="card-idea">{idea.idea}</dd>
       </dl>
 
-      {idea.createdAt && <p className="card-date">{formatDate(idea.createdAt)} 등록</p>}
+      {idea.created_at && <p className="card-date">{formatDate(idea.created_at)} 등록</p>}
 
       {confirming && (
         <div className="confirm-backdrop" onClick={() => setConfirming(false)}>

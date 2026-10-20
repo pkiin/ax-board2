@@ -1,17 +1,18 @@
 import { useState } from 'react'
 
-const EMPTY = { title: '', target: '', idea: '' }
+const EMPTY = { title: '', tag: '', target: '', idea: '' }
 
 export default function IdeaForm({ onAdd }) {
   const [form, setForm] = useState(EMPTY)
   const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
 
   function handleChange(event) {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
     const title = form.title.trim()
@@ -23,15 +24,17 @@ export default function IdeaForm({ onAdd }) {
       return
     }
 
-    onAdd({
-      id: crypto.randomUUID(),
-      title,
-      target,
-      idea,
-      createdAt: new Date().toISOString(),
-    })
-    setForm(EMPTY)
-    setError('')
+    setSaving(true)
+    try {
+      await onAdd({ title, tag: form.tag.trim(), target, idea })
+      setForm(EMPTY)
+      setError('')
+    } catch (err) {
+      // 서버가 400(제목 누락) 등으로 거부하면 그 문구를 그대로 보여 준다.
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -46,6 +49,17 @@ export default function IdeaForm({ onAdd }) {
           onChange={handleChange}
           placeholder="예) 주간 보고서 자동 초안 작성"
           maxLength={80}
+        />
+      </label>
+
+      <label className="field">
+        <span>태그 (선택)</span>
+        <input
+          name="tag"
+          value={form.tag}
+          onChange={handleChange}
+          placeholder="예) 보고서"
+          maxLength={30}
         />
       </label>
 
@@ -78,8 +92,8 @@ export default function IdeaForm({ onAdd }) {
         </p>
       )}
 
-      <button type="submit" className="submit">
-        카드 추가
+      <button type="submit" className="submit" disabled={saving}>
+        {saving ? '저장 중…' : '카드 추가'}
       </button>
     </form>
   )

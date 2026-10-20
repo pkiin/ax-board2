@@ -94,6 +94,11 @@
   font-weight: 600;
 }
 
+.submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .submit:hover {
   background: var(--accent-hover);
 }
@@ -145,8 +150,27 @@
   gap: 12px;
 }
 
+.card-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .card-title {
   font-size: 1.05rem;
+}
+
+.card-tag {
+  padding: 2px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .delete {
