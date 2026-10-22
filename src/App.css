@@ -4,9 +4,27 @@
   padding: 48px 20px 80px;
 }
 
+.page-title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
 .page-header h1 {
   font-size: 1.9rem;
   letter-spacing: -0.02em;
+}
+
+.idea-count {
+  padding: 3px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .page-desc {
@@ -76,6 +94,11 @@
   font-weight: 600;
 }
 
+.submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .submit:hover {
   background: var(--accent-hover);
 }
@@ -88,16 +111,43 @@
 .board-head {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 6px 10px;
 }
 
 .board-head h2 {
   font-size: 1.15rem;
 }
 
-.count {
-  font-size: 0.88rem;
+.board-hint {
   color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px 3px 11px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.filter-chip button {
+  padding: 2px 9px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.filter-chip button:hover {
+  background: var(--accent-hover);
 }
 
 .empty {
@@ -132,12 +182,42 @@
   gap: 12px;
 }
 
+.card-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .card-title {
   font-size: 1.05rem;
 }
 
-.delete {
+.card-tag {
+  padding: 2px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+button.card-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.card-actions {
   flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.edit,
+.delete {
   padding: 5px 12px;
   border: 1px solid var(--border);
   border-radius: 7px;
@@ -146,9 +226,34 @@
   font-size: 0.85rem;
 }
 
+.edit:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .delete:hover {
   border-color: var(--danger);
   color: var(--danger);
+}
+
+/* 카드 수정 폼 */
+.card-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.card-edit-actions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .card-body {
