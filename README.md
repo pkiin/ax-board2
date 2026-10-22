@@ -7,6 +7,8 @@
 - **아이디어 추가** — 제목 / 태그(선택) / 대상 업무 / AI 활용 아이디어를 입력해 카드로 등록합니다. 태그를 뺀 세 항목이 채워져야 등록되고, 서버도 제목이 비면 `400` 으로 거부합니다. 새 카드는 목록 맨 위에 쌓입니다.
 - **아이디어 개수 표시** — 화면 제목 옆에 `아이디어 N개` 배지를 띄웁니다. 카드를 추가·삭제하면 숫자가 바로 바뀌고, 한 건도 없으면 `아직 아이디어가 없어요` 로 바뀝니다.
 - **목록 조회와 삭제** — 서버에서 최신순으로 받아 목록으로 보여 주고, 카드마다 `삭제` 버튼으로 개별 삭제합니다.
+- **제목 · 태그 수정** — 카드의 `수정` 버튼으로 제목과 태그를 고칩니다. 제목을 비우면 저장되지 않고(서버 `400`), 태그를 비우면 태그가 지워집니다.
+- **태그로 거르기** — 카드의 `#태그` 를 누르면 그 태그가 붙은 카드만 서버에서 다시 받아 보여 줍니다. `전체 보기` 로 해제합니다.
 - **서버 저장** — 모든 변경이 PostgreSQL 의 `ideas` 테이블에 반영되므로 브라우저나 기기를 바꿔도 같은 목록이 보입니다.
 
 ## 준비
@@ -60,17 +62,23 @@ curl -X POST http://localhost:3099/api/ideas \
   -d '{"title":"테스트","tag":"샘플","target":"대상 업무","idea":"활용 아이디어"}'
 curl -X POST http://localhost:3099/api/ideas \
   -H 'Content-Type: application/json' -d '{"title":""}'   # 400 + 오류 메시지
+curl 'http://localhost:3099/api/ideas?tag=%EB%B3%B4%EA%B3%A0%EC%84%9C'  # ?tag=보고서 만
+curl -X PATCH http://localhost:3099/api/ideas/1 \
+  -H 'Content-Type: application/json' -d '{"title":"새 제목","tag":"새 태그"}'  # 200
+curl -X PATCH http://localhost:3099/api/ideas/1 \
+  -H 'Content-Type: application/json' -d '{"title":""}'   # 400
 curl -X DELETE http://localhost:3099/api/ideas/1          # 204
 psql -c 'SELECT * FROM ideas ORDER BY id;'                # DB 에서 직접 확인
 ```
 
 ## API
 
-| 메서드 | 경로 | 설명 | 응답 |
-| --- | --- | --- | --- |
-| `GET` | `/api/ideas` | 전체 목록 (최신순) | `200` + 배열 |
-| `POST` | `/api/ideas` | 등록. 본문 `{ title, tag?, target?, idea? }` | `201` + 생성된 행 / 제목이 비면 `400` |
-| `DELETE` | `/api/ideas/:id` | 삭제 | `204` / 없는 id 는 `404` / 숫자가 아니면 `400` |
+| 메서드 | 주소 | 요청 바디 | 성공 코드 | 실패 코드 |
+| --- | --- | --- | --- | --- |
+| `GET` | `/api/ideas?tag=…` | 없음. `tag` 는 선택이며 정확히 일치하는 카드만 | `200` + 배열 (최신순) | `500` |
+| `POST` | `/api/ideas` | `{ title, tag?, target?, idea? }` | `201` + 생성된 행 | `400` 제목이 비어 있음 / 깨진 JSON · `500` |
+| `PATCH` | `/api/ideas/:id` | `{ title?, tag? }` 중 하나 이상. `tag: ""` 는 태그 삭제 | `200` + 수정된 행 | `400` 제목이 비어 있음 / 수정할 항목 없음 / 잘못된 id · `404` 없는 id · `500` |
+| `DELETE` | `/api/ideas/:id` | 없음 | `204` | `400` 잘못된 id · `404` 없는 id · `500` |
 
 ## 프로젝트 구조
 
@@ -83,8 +91,8 @@ src/
 ├── main.jsx        진입점
 ├── App.jsx         상태 보유, 목록 렌더링, API 호출
 ├── IdeaForm.jsx    입력 폼과 유효성 검사
-├── IdeaCard.jsx    카드 표시와 삭제 버튼
-├── api.js          fetch 래퍼 (목록/등록/삭제)
+├── IdeaCard.jsx    카드 표시, 제목·태그 수정, 삭제
+├── api.js          fetch 래퍼 (목록/등록/수정/삭제)
 ├── index.css       전역 스타일과 색상 토큰
 └── App.css         화면 스타일
 
